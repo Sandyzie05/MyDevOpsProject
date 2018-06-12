@@ -1,0 +1,26 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Install repo key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key 
+        state: present
+    - name: Add the Jenkins repository
+      apt_repository:
+        repo: 'deb http://pkg.jenkins.io/debian-stable binary/'
+        state: present
+    - name: Install Jenkins
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes # for apt-get update
+    - name: Start and enable the Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+    - name: Install required packages
+      apt: name={{ item }} state=present
+      with_items:
+        - git
+        - phpunit
